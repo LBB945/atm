@@ -36,7 +36,43 @@ typedef struct Account Account;
 Account *head = NULL;
 Account *tail = NULL;
 
+void getpasswd(Account* pa)
+{
+	
 
+	char c;
+	int i = 0;
+	while ((c = getch()) != '\r')
+	{
+		if (c == '\b')
+		{
+			pa->password[--i] = NULL;
+			printf("\b");
+			printf(" ");
+			printf("\b");
+			
+		}
+		else
+		{
+			pa->password[i] = c;
+			putchar('*');
+			i++;
+		}
+		
+		
+	}
+		pa->password[i]='\0';
+		if (Y)
+		{
+			printf("\n---输入成功，回车继续---");
+		}
+		else
+		{
+			printf("\n---Enter successfully, press Enter to continue---");
+		}
+	return;
+
+}
 
 void addNode(Account *node)//Account链表的连接
 {
@@ -291,6 +327,66 @@ void homePage()
 {
 	system("cls");
 	updatePassword();
+}
+
+
+
+
+
+void drawMoney()//取款函数
+{
+	if (Y)
+	{
+		printf("请输入取款金额:");
+	}
+	else
+	{
+		printf("Please enter the withdrawal amount:");
+	}
+	
+	float money;
+	scanf("%f", &money);
+	getchar();
+
+	if (money>curAccount->money)
+	{
+		if (Y)
+		{
+			printf("---金额不足！---");
+		}
+		else
+		{
+			printf("---insufficient fund！---");
+		}
+		
+	}
+	else
+	{
+		curAccount->money = curAccount->money - money;
+		if (Y)
+		{
+			printf("---取款成功！---\n");
+		}
+		else
+		{
+			printf("---Withdrawals success！---\n");
+		}
+
+		exitFunction();   //保存数据（Account）
+
+		TR *newNode = (TR *)malloc(sizeof(TR));
+		char t[20] = { "取款/支出" };
+		strcpy(newNode->username, curAccount->username);
+		strcpy(newNode->type, t);          //记录交易类型
+		newNode->amount = money;           //记录交易金额
+		newNode->timestamp = time(NULL);   //记录当前时间戳
+		newNode->money=curAccount->money;  //保存当前余额
+
+		addNodeTR(newNode);     //链表连接（TR）
+		saveTransactionRecord();//保存数据（TR）
+		return;
+		
+	}
 }
 
 Account * findOtherAccount(char otherUsername[])
